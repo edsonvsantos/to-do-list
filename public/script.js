@@ -38,6 +38,28 @@ class TaskManager{
     async toggleTask(id){
         await fetch (`/tasks/${id}/toggle`, {method:'PATCH'});
     }
+
+    render(tasks){
+        this.taskList.innerHTML = '';
+
+        tasks.forEach(task => {
+            const li = document.createElement('li');
+            li.className = task.completed ? 'completed' : '';
+
+            const span = document.createElement('button');
+            span.textContent = task.description;
+            span.addEventListener('click', () => this.toggleTask(task.id));
+
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-btn';
+            removeBtn.textContet = 'Remove';
+            removeBtn.addEventListener('click', () => this.removeTasks(task.id));
+
+            li.appendChild(span);
+            li.appendChild(removeBtn);
+            this.taskList.appendChild(li);
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
