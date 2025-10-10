@@ -11,34 +11,42 @@ class Task{
 
 class TaskManager{
     constructor(){
-        this.tasks = [];
+        this.taskList = document.getElementById('task-list');
+        this.loadTask();
     }
 
-    addTask(description){
-        const task = new Task(description);
-        this.tasks.push(task);
-        this.displayTask();
+    async loadTasks(){
+        const response = await fetch('/tasks');
+        const tasks = await response.json();
+        this.render(tasks);
     }
 
-    removeTask(index){
-        this.tasks.splice(index, 1);
-        this.displayTask();
+    async addTask(description){
+        await fetch('/tasks', {
+            method: 'POST',
+            headers: { 'Content-type': 'application/json'},
+            body: JSON.stringify({description})
+        });
+        this.loadTasks();
     }
 
-    toggleTaskCompletion(index){
-        this.tasks[index].toggleComplete();
-        this.displayTask();
+    async removeTasks(id){
+        await fetch(`/tasks/${id}`, {method: 'DELETE'});
+        this.loadTasks();
     }
 
-    displayTask(){
-        const taskList = document.getElementById('task-list');
-        taskList.innerHTML = '';
-
-        this.tasks.forEach((task, index) => {
-            const taskItem = document.createElement('li');
-            taskItem.className = task.completed ? 'completed' : '';
-            
-            
-        })
+    async toggleTask(id){
+        await fetch (`/tasks/${id}/toggle`, {method:'PATCH'});
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const TaskManager = new TaskManager();
+    const addTaskBtn = document.getElementById('add-task-btn')
+    const taskInput = document.getElementById('task-input')
+
+    addTaskBtn.addEventListener('click', () => {
+        const taskDescription =  taskInput.value.trim();
+        
+    })
+})
